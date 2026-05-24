@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:context=".HelpActivity">
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/about"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display3" />
+
+    <TextView
+        android:id="@+id/tvSubtitle"
+        android:layout_width="800dp"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="10dp"
+        android:text='@string/description'
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingTop="32dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/issues"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/submit_issues"
+            android:textAlignment="center" />
+
+        <!-- TODO: Update picture -->
+        <ImageView
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:contentDescription="@string/github_qr_code"
+            android:src="@drawable/qrcode_github" />
+
+        <Button
+            android:id="@+id/btnOpenGithub"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/open_github" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="500dp"
+        android:layout_height="3dp"
+        android:background="@color/material_dynamic_neutral0"
+        android:layout_marginVertical="5dp"/>
+
+    <Button
+        android:id="@+id/btnClose"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/close" />
+
+
+</LinearLayout>
