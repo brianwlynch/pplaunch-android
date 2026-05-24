@@ -1,0 +1,64 @@
+<resources>
+    <string name="app_name">TFC Public Panel Launcher</string>
+    <string name="background_image">Background Image</string>
+    <string name="tfc_is_launching">TFC Is Launching</string>
+    <string name="settings_icon">Settings Icon</string>
+    <string name="help_icon">Help Icon</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="help">HELP</string>
+    <string name="github_help">This is not an Official TFC Product. If something doesn\'t work please submit an issue on github.</string>
+    <string name="github_qr_code">Github QR Code</string>
+    <string name="rocket_picture">Rocket Picture</string>
+    <string name="settings">Settings</string>
+    <string name="debug_mode">Debug Mode</string>
+    <string name="url_prefix">Prefix</string>
+    <string name="url_base">Base</string>
+    <string name="dot">.</string>
+    <string name="https">HTTPS://</string>
+    <string name="instance">INSTANCE</string>
+    <string name="tfc_instance">TFC Instance:</string>
+    <string name="custom_url_colon">Custom URL:</string>
+    <string name="custom_url">Custom URL</string>
+    <string name="something">Something</string>
+    <string name="redirect_mode">Redirect Mode:</string>
+    <string name="is_launching"> is Launching</string>
+    <string name="loading_string">Loading String:</string>
+    <string name="example_url">http(s)://example.com</string>
+    <string name="save_settings">Save Settings</string>
+    <string name="description">PPLaunch is a small client-side app meant for use on TFC public panels such as touchscreens and tablets. It enables these devices to power up before the TFC servers without the need for a human to refresh the browser once the TFC servers are online.\n\nThe panel will open, then every five seconds it will try to connect to the TFC servers. Upon successful connection it will reload the page automatically. If you see a 401 page from TFC, then there is no assigned public panel for the IP address of the device running this program.\n\n<b>DISCLAIMER</b> - This is not an official TFC Product. If something does not work DO NOT contact TFC Support, they will not be able to help you!</string>
+    <string name="about">About</string>
+    <string name="issues">Issues</string>
+    <string name="submit_issues">Please submit problems or suggestions as issues,\nusing the Github Issues page.</string>
+    <string name="open_github">Open Github</string>
+    <string name="close">Close Window</string>
+    <string name="debug_icon">Debug Icon</string>
+    <string name="exit">Exit</string>
+    <string name="exit_message">Can\'t navigate back anymore!\nAre you sure you want to exit?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+
+    <!-- These are the subtitle messages -->
+    <string name="auto_refresh">This page will automatically refresh when ready.</string>
+    <string name="subtitle01">Waiting for TFC servers to come online.</string>
+    <string name="subtitle02">Hang tight, the panel will launch automatically.</string>
+    <string name="subtitle03">The panel will start once the TFC servers come online.</string>
+    <string name="subtitle04">Grab a coffee, we\'re getting things ready.</string>
+    <string name="subtitle05">Patience is the art of concealing your impatience.</string>
+    <string name="subtitle06">Good things come to those who wait… and wait… and wait.</string>
+    <string name="subtitle07">The best things in life take time — even a rocket needs a countdown.</string>
+    <string name="subtitle08">Sometimes the wait is the hardest part, but it\'s worth it.</string>
+    <string name="subtitle09">Like a cup of coffee, great things brew slowly.</string>
+    <string name="subtitle10">Waiting isn’t a waste when you’re preparing for something amazing.</string>
+    <string name="subtitle11">All good things come to those who wait — and we\'re almost there!</string>
+    <string name="subtitle12">In the end, everything is worth the wait. Almost there!</string>
+    <string name="subtitle13">Patience is not the ability to wait, but how we act while waiting.</string>
+    <string name="subtitle14">The servers may be loading, but so is greatness!</string>
+    <string name="subtitle15">We are still cranking open the expando, be patient.</string>
+
+
+    <string name="url_error">URL Error</string>
+    <string name="broken_url">Your URL is broken! Check your settings!</string>
+    <string name="no_tfc">You don\'t have a TFC instance set! Check your settings!</string>
+    <string name="no_http_s">Your URL doesn\'t include \"http\" or \"https\"! Check your settings!</string>
+    <string name="pplaunch_v">PPLaunch v%1$s</string>
+</resources>
