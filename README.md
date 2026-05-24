@@ -25,6 +25,6 @@ The panel will continue to operate as normally. Use the `console` tab in dev too
  <picture>
    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=brianwlynch/pplaunch&type=date&theme=dark&logscale&legend=top-left" />
    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=brianwlynch/pplaunch&type=date&logscale&legend=top-left" />
-   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=brianwlynch/pplaunch&type=date&logscale&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=brianwlynch/pplaunch-android&type=date&logscale&legend=top-left" />
  </picture>
 </a>
