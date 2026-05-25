@@ -6,6 +6,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
@@ -22,6 +23,7 @@ object SettingsKeys {
     val BASE_URL = stringPreferencesKey("base_url")
     val CUSTOM_URL = stringPreferencesKey("custom_url")
     val LOADING_STRING = stringPreferencesKey("loading_string")
+    val ZOOM_PERCENT = intPreferencesKey("zoom_percent")
 }
 
 class SettingsRepository(private val context: Context) {
@@ -35,6 +37,7 @@ class SettingsRepository(private val context: Context) {
     val baseURL: Flow<String>         = dataStore.data.map { it[SettingsKeys.BASE_URL] ?: "NEPGroup.io" }
     val customURL: Flow<String>       = dataStore.data.map { it[SettingsKeys.CUSTOM_URL] ?: "" }
     val loadingString: Flow<String>   = dataStore.data.map { it[SettingsKeys.LOADING_STRING] ?: "" }
+    val zoomPercent: Flow<Int>        = dataStore.data.map { it[SettingsKeys.ZOOM_PERCENT] ?: 75}
 
     suspend fun getAll(): Preferences = dataStore.data.first()
 
@@ -45,7 +48,8 @@ class SettingsRepository(private val context: Context) {
         baseURL: String,
         tfcInstance: String,
         customURL: String,
-        loadingString: String
+        loadingString: String,
+        zoomPercent: Int
     ) {
         dataStore.edit { prefs ->
             prefs[SettingsKeys.DEBUG]          = debug
@@ -55,6 +59,7 @@ class SettingsRepository(private val context: Context) {
             prefs[SettingsKeys.TFC_INSTANCE]   = tfcInstance
             prefs[SettingsKeys.CUSTOM_URL]     = customURL
             prefs[SettingsKeys.LOADING_STRING] = loadingString
+            prefs[SettingsKeys.ZOOM_PERCENT]   = zoomPercent
         }
 
     }

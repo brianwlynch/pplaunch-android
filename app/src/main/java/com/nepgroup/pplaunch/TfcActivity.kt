@@ -44,8 +44,10 @@ class TfcActivity : AppCompatActivity() {
             systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         }
         repo = SettingsRepository(applicationContext)
+        lifecycleScope.launch {
+            prefs = repo.getAll()
+        }
 
-        binding.wvTFC.setInitialScale(75)
         binding.wvTFC.apply {
             settings.javaScriptEnabled = true
             settings.domStorageEnabled = true
@@ -84,6 +86,11 @@ class TfcActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         Log.i(TAG, "Activity Resumed, Resuming Polling!")
+        repo = SettingsRepository(applicationContext)
+        lifecycleScope.launch {
+            prefs = repo.getAll()
+            binding.wvTFC.setInitialScale(prefs[SettingsKeys.ZOOM_PERCENT]?: 75)
+        }
         pollingJob?.cancel()
         startPolling(intent.getStringExtra("url") ?: "No Url")
     }

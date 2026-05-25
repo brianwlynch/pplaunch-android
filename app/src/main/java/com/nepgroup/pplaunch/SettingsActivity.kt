@@ -65,6 +65,9 @@ private lateinit var repo: SettingsRepository
             binding.etCustomURL.setText(prefs[SettingsKeys.CUSTOM_URL] ?: "")
             binding.etLoadingString.setText(prefs[SettingsKeys.LOADING_STRING] ?: "")
             binding.cbDebugMode.isChecked = prefs[SettingsKeys.DEBUG] ?: false
+
+            val savedZoom = prefs[SettingsKeys.ZOOM_PERCENT] ?: 75
+            binding.etZoomPercent.setText(savedZoom.toString())
         }
 
 
@@ -91,6 +94,7 @@ private lateinit var repo: SettingsRepository
             prefs[SettingsKeys.BASE_URL]        = binding.actvUrlBase.text.toString()
             prefs[SettingsKeys.CUSTOM_URL]      = binding.etCustomURL.text.toString().trim()
             prefs[SettingsKeys.LOADING_STRING]  = binding.etLoadingString.text.toString().trim()
+            prefs[SettingsKeys.ZOOM_PERCENT]    = binding.etZoomPercent.text.toString().trim().toInt()
         }
     }
 

@@ -61,4 +61,8 @@
     <string name="no_tfc">You don\'t have a TFC instance set! Check your settings!</string>
     <string name="no_http_s">Your URL doesn\'t include \"http\" or \"https\"! Check your settings!</string>
     <string name="pplaunch_v">PPLaunch v%1$s</string>
+    <string name="window_zoom_percent">Window Zoom Percent</string>
+    <string name="default_75">Default 75%</string>
+    <string name="zoom_percent">Zoom Percent</string>
+    <string name="five_seconds">Note: The panel will wait 5 seconds before trying to reach your site.</string>
 </resources>
