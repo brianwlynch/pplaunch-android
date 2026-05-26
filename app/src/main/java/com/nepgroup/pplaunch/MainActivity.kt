@@ -5,12 +5,9 @@ import android.animation.AnimatorListenerAdapter
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
-import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -19,7 +16,6 @@ import android.view.animation.AccelerateInterpolator
 import android.view.animation.LinearInterpolator
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.toColorInt
 import androidx.core.view.WindowCompat
@@ -53,8 +49,7 @@ class MainActivity : AppCompatActivity() {
     private var subtitleIndex = -1
     private val bootTime = LocalDateTime.now()
 
-    @SuppressLint("SetTextI18n")
-    override fun onCreate(savedInstanceState: Bundle?) {
+        override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -128,9 +123,8 @@ class MainActivity : AppCompatActivity() {
 
     /** Update UI from settings */
     fun updateUI() {
-        binding.tvTitle.text = if(prefs[SettingsKeys.REDIRECT_MODE] == "Custom URL"){
-            val label = prefs[SettingsKeys.LOADING_STRING]
-                .takeUnless { it.isNullOrBlank() }
+        binding.tvTitle.text = if (prefs[SettingsKeys.REDIRECT_MODE] == "Custom URL") {
+            val label = prefs[SettingsKeys.LOADING_STRING].takeUnless { it.isNullOrBlank() }
                 ?: getString(R.string.custom_url)
             "$label ${getString(R.string.is_launching)}"
         } else {
@@ -155,12 +149,10 @@ class MainActivity : AppCompatActivity() {
             binding.ivDebug.visibility = View.GONE
         }
 
-        if (prefs[SettingsKeys.TFC_INSTANCE].isNullOrBlank() && prefs[SettingsKeys.REDIRECT_MODE] == "TFC"){
-                alertDialog(
-                    getString(R.string.url_error),
-                    getString(R.string.no_tfc),
-                    R.drawable.link_error
-                )
+        if (prefs[SettingsKeys.TFC_INSTANCE].isNullOrBlank() && prefs[SettingsKeys.REDIRECT_MODE] == "TFC") {
+            alertDialog(
+                getString(R.string.url_error), getString(R.string.no_tfc), R.drawable.link_error
+            )
 
         }
     }
@@ -269,9 +261,9 @@ class MainActivity : AppCompatActivity() {
             })
         }
 
-        rocket.setOnClickListener {
-            Toast.makeText(this, "Rocket: Not Yet Implemented", Toast.LENGTH_SHORT).show()
-        }
+//        rocket.setOnClickListener {
+//            Toast.makeText(this, "Rocket: Not Yet Implemented", Toast.LENGTH_SHORT).show()
+//        }
 
         if (firstRun) {
             val randy = Math.random() * 100
@@ -361,7 +353,12 @@ class MainActivity : AppCompatActivity() {
                                     }
                                 }
                             } else {
-                                Log.d(TAG,"It's been ${"%.2f".format(dur)} minutes. Showing clock in ${"%.2f".format(timeout - dur)}")
+                                Log.d(
+                                    TAG,
+                                    "It's been ${"%.2f".format(dur)} minutes. Showing clock in ${
+                                        "%.2f".format(timeout - dur)
+                                    }"
+                                )
                             }
                         } else {
                             withContext(Dispatchers.Main) {
@@ -374,7 +371,7 @@ class MainActivity : AppCompatActivity() {
                     withContext(Dispatchers.Main) {
                         alertDialog(
                             getString(R.string.url_error),
-                            getString(R.string.broken_url),
+                            getString(R.string.broken_url) + "${e.message}",
                             R.drawable.link_error
                         )
                     }
@@ -404,7 +401,6 @@ class MainActivity : AppCompatActivity() {
                         )
                     }
                 }
-
                 delay(5000)
             }
         }

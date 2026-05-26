@@ -44,7 +44,6 @@
             android:text="@string/submit_issues"
             android:textAlignment="center" />
 
-        <!-- TODO: Update picture -->
         <ImageView
             android:layout_width="300dp"
             android:layout_height="300dp"

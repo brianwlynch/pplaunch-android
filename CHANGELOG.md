@@ -1,4 +1,7 @@
 # Change Log
 
 ## v1.0.0 - *Latest*
-- Initial Commit
+- Initial Build of app
+
+## Future Adds
+- Space Invaders?

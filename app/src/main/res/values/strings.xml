@@ -6,7 +6,7 @@
     <string name="help_icon">Help Icon</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="help">HELP</string>
-    <string name="github_help">This is not an Official TFC Product. If something doesn\'t work please submit an issue on github.</string>
+    <string name="github_help">This is not an Official TFC Product. If something doesn\'t work please submit an issue on GitHub.</string>
     <string name="github_qr_code">Github QR Code</string>
     <string name="rocket_picture">Rocket Picture</string>
     <string name="settings">Settings</string>
