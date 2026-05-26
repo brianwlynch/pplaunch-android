@@ -97,11 +97,31 @@
                 app:tint="@color/white" />
 
             <ImageView
+                android:id="@+id/ivAlert"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginHorizontal="12dp"
+                android:contentDescription="@string/alert_icon"
+                android:src="@drawable/alert"
+                android:visibility="gone"
+                app:tint="@color/white" />
+
+            <ImageView
+                android:id="@+id/ivCloud"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginHorizontal="12dp"
+                android:contentDescription="@string/cloud_icon"
+                android:src="@drawable/cloud"
+                android:visibility="gone"
+                app:tint="@color/white" />
+
+            <ImageView
                 android:id="@+id/ivClock"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:layout_marginHorizontal="12dp"
-                android:contentDescription="@string/debug_icon"
+                android:contentDescription="@string/clock_icon"
                 android:src="@drawable/clock"
                 android:visibility="gone"
                 app:tint="@color/white" />

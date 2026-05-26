@@ -32,6 +32,9 @@
     <string name="open_github">Open Github</string>
     <string name="close">Close Window</string>
     <string name="debug_icon">Debug Icon</string>
+    <string name="clock_icon">Clock Icon</string>
+    <string name="alert_icon">Alert Icon</string>
+    <string name="cloud_icon">Cloud Icon</string>
     <string name="exit">Exit</string>
     <string name="exit_message">Can\'t navigate back anymore!\nAre you sure you want to exit?</string>
     <string name="yes">Yes</string>
@@ -65,4 +68,11 @@
     <string name="default_75">Default 75%</string>
     <string name="zoom_percent">Zoom Percent</string>
     <string name="five_seconds">Note: The panel will wait 5 seconds before trying to reach your site.</string>
+    <string name="settings_incomplete">Settings Incomplete</string>
+    <string name="complete_settings">Your settings need to be completed!</string>
+    <string name="its_taking_a_long_time_to_load">Its Taking a Long Time to Load</string>
+    <string name="this_is_why_you_are_in_debug_mode">This is why:\nYou are in debug mode!</string>
+    <string name="new_update">New Update</string>
+    <string name="a_new_version_may_be_available_check_github_releases">A new version may be available! Check GitHub releases</string>
+    <string name="this_is_why">This is why:\n%1$s</string>
 </resources>

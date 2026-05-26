@@ -18,6 +18,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.toColorInt
+import androidx.core.net.toUri
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -31,6 +32,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.MalformedURLException
 import java.net.URL
@@ -41,15 +43,20 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 class MainActivity : AppCompatActivity() {
+
+    val gitRepo = "brianwlynch/pplaunch-android"
     private lateinit var binding: ActivityMainBinding
     private lateinit var repo: SettingsRepository
+    @Suppress("PrivatePropertyName")
     private var TAG: String = "MainActivity"
     private var pollingJob: Job? = null
+    private var pollingUpdateJob: Job? = null
     private lateinit var prefs: Preferences
     private var subtitleIndex = -1
     private val bootTime = LocalDateTime.now()
+    private var versionName = ""
 
-        override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -61,21 +68,42 @@ class MainActivity : AppCompatActivity() {
             systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         }
 
+        val packageInfo =
+            packageManager.getPackageInfo(packageName, PackageManager.PackageInfoFlags.of(0))
+        versionName = packageInfo.versionName.toString()
+
         repo = SettingsRepository(applicationContext)
         lifecycleScope.launch {
             prefs = repo.getAll()
-            val url = repo.buildURL(prefs)
-            if (url != null) {
+            val url = repo.buildURL(prefs) ?: ""
+            val instance = prefs[SettingsKeys.TFC_INSTANCE] ?: ""
+            val customURL = prefs[SettingsKeys.CUSTOM_URL] ?: ""
+
+
+            val tfcReady = prefs[SettingsKeys.REDIRECT_MODE] == "TFC" && instance.isNotBlank()
+            val customReady = prefs[SettingsKeys.REDIRECT_MODE] == "Custom URL" && customURL.isNotBlank()
+
+            if (tfcReady || customReady){
                 startPolling(url, prefs)
-            } else {
-                Log.w(TAG, "Settings incomplete, polling stopped!")
+                binding.ivAlert.visibility = View.GONE
+            }else {
+                Log.w("$TAG:Polling", "Settings incomplete, polling stopped!")
+                binding.ivAlert.visibility = View.VISIBLE
+                binding.ivAlert.setOnClickListener {
+                    alertDialog(
+                        getString(R.string.settings_incomplete),
+                        getString(R.string.complete_settings),
+                        icon = R.drawable.settings,
+                        "Open Settings" to { openSettings() }
+                    )
+                }
+
             }
+
+            checkUpdate()
         }
 
-        binding.ivSettings.setOnClickListener {
-            val intent = Intent(this, SettingsActivity::class.java)
-            startActivity(intent)
-        }
+        binding.ivSettings.setOnClickListener { openSettings() }
         binding.ivHelp.setOnClickListener {
             val intent = Intent(this, HelpActivity::class.java)
             startActivity(intent)
@@ -98,26 +126,44 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        Log.i(TAG, "Activity Resumed, Resuming Polling!")
+        Log.i("$TAG:Polling", "Activity Resumed, Resuming Polling!")
 
         // This is the same as onCreate, except updating UI here to give time for settings to initially load.
         lifecycleScope.launch {
             lifecycleScope.launch {
                 prefs = repo.getAll()
-                val url = repo.buildURL(prefs)
-                updateUI()
-                if (url != null) {
+                val url = repo.buildURL(prefs) ?: ""
+
+                val instance = prefs[SettingsKeys.TFC_INSTANCE] ?: ""
+                val customURL = prefs[SettingsKeys.CUSTOM_URL] ?: ""
+
+                val tfcReady = prefs[SettingsKeys.REDIRECT_MODE] == "TFC" && instance.isNotBlank()
+                val customReady = prefs[SettingsKeys.REDIRECT_MODE] == "Custom URL" && customURL.isNotBlank()
+
+                if (tfcReady || customReady){
                     startPolling(url, prefs)
+                    binding.ivAlert.visibility = View.GONE
                 } else {
-                    Log.w(TAG, "Settings incomplete, polling stopped!")
+                    Log.w("$TAG:Polling", "Settings incomplete, polling stopped!")
+                    Log.w("$TAG:Polling", "Settings incomplete, polling stopped!")
+                    binding.ivAlert.visibility = View.VISIBLE
+                    binding.ivAlert.setOnClickListener {
+                        alertDialog(
+                            getString(R.string.settings_incomplete),
+                            getString(R.string.complete_settings),
+                            icon = R.drawable.settings,
+                            "Open Settings" to { openSettings() }
+                        )
+                    }
                 }
+                updateUI()
             }
         }
     }
 
     override fun onPause() {
         super.onPause()
-        Log.w(TAG, "Activity Paused, Stopping Polling!")
+        Log.w("$TAG:Polling", "Activity Paused, Stopping Polling!")
         pollingJob?.cancel()
     }
 
@@ -130,10 +176,6 @@ class MainActivity : AppCompatActivity() {
         } else {
             getString(R.string.tfc_is_launching)
         }
-
-        val packageInfo =
-            packageManager.getPackageInfo(packageName, PackageManager.PackageInfoFlags.of(0))
-        val versionName = packageInfo.versionName
         binding.tvVersion.text = getString(R.string.pplaunch_v, versionName)
 
         if (prefs[SettingsKeys.DEBUG] ?: false) {
@@ -142,7 +184,8 @@ class MainActivity : AppCompatActivity() {
                 alertDialog(
                     "Debug Mode",
                     "You are in debug mode! The panel won't redirect!",
-                    R.drawable.debug
+                    R.drawable.debug,
+                    "Open Settings" to { openSettings() }
                 )
             }
         } else {
@@ -151,7 +194,8 @@ class MainActivity : AppCompatActivity() {
 
         if (prefs[SettingsKeys.TFC_INSTANCE].isNullOrBlank() && prefs[SettingsKeys.REDIRECT_MODE] == "TFC") {
             alertDialog(
-                getString(R.string.url_error), getString(R.string.no_tfc), R.drawable.link_error
+                getString(R.string.url_error), getString(R.string.no_tfc), R.drawable.link_error,
+                "Open Settings" to { openSettings() }
             )
 
         }
@@ -304,7 +348,7 @@ class MainActivity : AppCompatActivity() {
             while (true) {
                 try {
                     val url = URL(targetURL)
-                    Log.v(TAG, "Trying to get $targetURL")
+                    Log.v("$TAG:Polling", "Trying to get $targetURL")
 
                     val connection = when (url.protocol) {
                         "https" -> url.openConnection() as HttpsURLConnection
@@ -313,7 +357,8 @@ class MainActivity : AppCompatActivity() {
                             alertDialog(
                                 getString(R.string.url_error),
                                 getString(R.string.no_http_s),
-                                R.drawable.link_error
+                                R.drawable.link_error,
+                                "Open Settings" to { openSettings() }
                             )
                             break
                         }
@@ -332,13 +377,13 @@ class MainActivity : AppCompatActivity() {
 
 
                     connection.disconnect()
-                    Log.v(TAG, "Response: $status - ${connection.responseMessage}")
+                    Log.v("$TAG:Polling", "Response: $status - ${connection.responseMessage}")
 
                     if (status == 404 || (status == 200 && body.contains("404"))) {
-                        Log.w(TAG, "Connected, but not healthy!")
+                        Log.w("$TAG:Polling", "Connected, but not healthy!")
                     } else {
                         if (preferences[SettingsKeys.DEBUG] ?: false) {
-                            Log.d(TAG, "Debug mode, not redirecting!")
+                            Log.d("$TAG:Polling", "Debug mode, not redirecting!")
 
                             val dur = Duration.between(bootTime, LocalDateTime.now()).seconds / 60.0
                             if (dur >= timeout) {
@@ -346,16 +391,17 @@ class MainActivity : AppCompatActivity() {
                                     binding.ivClock.visibility = View.VISIBLE
                                     binding.ivClock.setOnClickListener {
                                         alertDialog(
-                                            "It is Taking a Long Time to Load",
-                                            "This is why:\nYou are in debug mode!",
-                                            R.drawable.clock
+                                            getString(R.string.its_taking_a_long_time_to_load),
+                                            getString(R.string.this_is_why_you_are_in_debug_mode),
+                                            R.drawable.clock,
+                                            "Open Settings" to { openSettings() }
                                         )
                                     }
                                 }
                             } else {
                                 Log.d(
-                                    TAG,
-                                    "It's been ${"%.2f".format(dur)} minutes. Showing clock in ${
+                                    "$TAG:Polling",
+                                    "Its been ${"%.2f".format(dur)} minutes. Showing clock in ${
                                         "%.2f".format(timeout - dur)
                                     }"
                                 )
@@ -372,13 +418,14 @@ class MainActivity : AppCompatActivity() {
                         alertDialog(
                             getString(R.string.url_error),
                             getString(R.string.broken_url) + "${e.message}",
-                            R.drawable.link_error
+                            R.drawable.link_error,
+                            "Open Settings" to { openSettings() }
                         )
                     }
                     break
                 } catch (e: Exception) {
                     val err = e.toString()
-                    Log.e(TAG, "Error $err")
+                    Log.e("$TAG:Polling", "Error $err")
 
                     val dur = Duration.between(bootTime, LocalDateTime.now()).seconds / 60.0
                     if (dur >= timeout) {
@@ -386,16 +433,15 @@ class MainActivity : AppCompatActivity() {
                             binding.ivClock.visibility = View.VISIBLE
                             binding.ivClock.setOnClickListener {
                                 alertDialog(
-                                    "It is Taking a Long Time to Load",
-                                    "This is why:\n${e.message}",
+                                    getString(R.string.its_taking_a_long_time_to_load),
+                                    getString(R.string.this_is_why, e.message),
                                     R.drawable.clock
                                 )
                             }
                         }
                     } else {
                         Log.d(
-                            TAG,
-                            "It's been ${"%.2f".format(dur)} minutes. Showing clock in ${
+                            "$TAG:Polling", "Its been ${"%.2f".format(dur)} minutes. Showing clock in ${
                                 "%.2f".format(timeout - dur)
                             }"
                         )
@@ -414,13 +460,88 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun alertDialog(
-        title: String, message: String, icon: Int
+        title: String, message: String, icon: Int, vararg buttons: Pair<String, () -> Unit>
     ) {
-        val builder = AlertDialog.Builder(this@MainActivity)
+        val builder =
+            AlertDialog.Builder(this@MainActivity).setTitle(title).setMessage(message).setIcon(icon)
+                .setNeutralButton("Close") { dialog, _ -> dialog.dismiss() }
 
-        builder.setTitle(title).setMessage(message).setIcon(icon)
-            .setNeutralButton("Close") { dialog, _ ->
-                dialog.dismiss()
-            }.show()
+        // AlertDialog only supports 3 buttons, so take up to 3
+        buttons.getOrNull(0)?.let { (label, action) ->
+            builder.setPositiveButton(label) { _, _ -> action() }
+        }
+        buttons.getOrNull(1)?.let { (label, action) ->
+            builder.setNegativeButton(label) { _, _ -> action() }
+        }
+
+        builder.show()
+    }
+
+    fun checkUpdate() {
+        pollingUpdateJob?.cancel()
+        pollingUpdateJob = lifecycleScope.launch(Dispatchers.IO) {
+            val url = URL("https://api.github.com/repos/$gitRepo/releases/latest")
+
+            try {
+                Log.v("$TAG:Update", "Checking for updates! - $gitRepo")
+
+                val connection = url.openConnection() as HttpsURLConnection
+
+                connection.requestMethod = "GET"
+                connection.connectTimeout = 5000
+                connection.readTimeout = 5000
+
+                val status = connection.responseCode
+                val body = if (status >= 400) {
+                    connection.errorStream?.bufferedReader()?.readText() ?: ""
+                } else {
+                    connection.inputStream.bufferedReader().readText()
+                }
+                connection.disconnect()
+                val json = JSONObject(body)
+                val tagName = json.getString("tag_name")
+
+                Log.v("$TAG:Update", "Latest Tag Version: $tagName")
+
+                withContext(Dispatchers.Main) {
+                    if (isUpdateAvailable(versionName, tagName)) {
+                        binding.ivCloud.visibility = View.VISIBLE
+                        binding.ivCloud.setOnClickListener {
+                            alertDialog(
+                                getString(R.string.new_update),
+                                getString(R.string.a_new_version_may_be_available_check_github_releases),
+                                icon = R.drawable.github,
+                                "Open GitHub" to {
+                                    val url = "https://github.com/$gitRepo/releases"
+                                    val intent = Intent(Intent.ACTION_VIEW, url.toUri())
+                                    startActivity(intent)
+                                }
+                            )
+                        }
+                        Log.v("$TAG:Update", "New Version Available!")
+                    } else {
+                        binding.ivCloud.visibility = View.GONE
+                    }
+                }
+
+
+            } catch (e: Exception) {
+                Log.e("$TAG:Update", "Exception - ${e.message}")
+            } catch (e: Error) {
+                Log.e("$TAG:Update", "Error - ${e.message}")
+            }
+        }
+    }
+
+    fun isUpdateAvailable(versionName: String, tagName: String): Boolean {
+        val (appMajor, appMinor, appPatch) = versionName.trimStart('v').split(".")
+            .map { it.toInt() }
+        val (gitMajor, gitMinor, gitPatch) = tagName.trimStart('v').split(".").map { it.toInt() }
+        return gitMajor > appMajor || (gitMajor == appMajor && gitMinor > appMinor) || (gitMajor == appMajor && gitMinor == appMinor && gitPatch > appPatch)
+    }
+
+    fun openSettings(){
+        val intent = Intent(this@MainActivity, SettingsActivity::class.java)
+        startActivity(intent)
     }
 }

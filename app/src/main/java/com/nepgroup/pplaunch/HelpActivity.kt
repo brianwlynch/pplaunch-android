@@ -9,6 +9,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.nepgroup.pplaunch.databinding.ActivityHelpBinding
 import androidx.core.net.toUri
 
+
 class HelpActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityHelpBinding
@@ -24,7 +25,8 @@ class HelpActivity : AppCompatActivity() {
         }
 
         binding.btnOpenGithub.setOnClickListener {
-            val url = "https://github.com/brianwlynch/pplaunch-android"
+            val main = MainActivity()
+            val url = "https://github.com/${main.gitRepo}/releases"
             val intent = Intent(Intent.ACTION_VIEW, url.toUri())
             startActivity(intent)
         }
